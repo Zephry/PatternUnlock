@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Solution {
 	final static int CENTERNODE = 0;
@@ -118,7 +121,7 @@ public class Solution {
 		nodes[4].shouldChangeNode.add(7);
 		nodes[4].shouldChangeNode.add(8);
 		
-
+		
 		double max = 0;
 		Node[] tmpNodes = new Node[9];
 		for(int m=0;m<9;m++) {
@@ -126,13 +129,13 @@ public class Solution {
 		}
 		
 		tmpNodes = viewNode(tmpNodes, tmpNodes[0]);			//Start from Corner Node
-		max = findDis(0, tmpNodes[0], tmpNodes, 0, max);
+		max = findDis(0, 0, tmpNodes, 0, max);
 		
 		for(int m=0;m<9;m++) {
 			tmpNodes[m] = nodes[m].copy();
 		}
 		tmpNodes = viewNode(tmpNodes, tmpNodes[1]);			//Start from Row Node
-		double tmp = findDis(0, tmpNodes[1], tmpNodes, 0, max);
+		double tmp = findDis(0, 1, tmpNodes, 0, max);
 		if(tmp > max) {
 			max = tmp;
 		}
@@ -141,19 +144,20 @@ public class Solution {
 			tmpNodes[m] = nodes[m].copy();
 		}
 		tmpNodes = viewNode(tmpNodes, tmpNodes[4]);			//Start from Center Node
-		tmp = findDis(0, tmpNodes[4], tmpNodes, 0, max);
+		tmp = findDis(0, 4, tmpNodes, 0, max);
 		if(tmp > max) {
 			max = tmp;
 		}
 		return max;
 	}
 	
-	public static double findDis(double current, Node lastNode, Node[] nodes, int count, double max) {
+	public static double findDis(double current, int lastNode, Node[] nodes, int count, double max) {
 		if(count == 8) {
 			return current;
 		}
-		for(int i=0;i<lastNode.neigh.size();i++) {
-			Node currentNode = nodes[lastNode.neigh.get(i)];
+		for(int i=0;i<nodes[lastNode].neigh.size();i++) {
+			Node currentNode = nodes[nodes[lastNode].neigh.get(i)];
+
 			if(!currentNode.viewed) {
 				Node[] tmp = new Node[9];
 				for(int m=0;m<9;m++) {
@@ -161,14 +165,18 @@ public class Solution {
 				}
 				
 				nodes = viewNode(nodes, currentNode);
-				double result = findDis(current + calculateDis(lastNode, currentNode), currentNode, nodes, count+1, max);
+				double result = findDis(current + calculateDis(nodes[lastNode], currentNode), nodes[lastNode].neigh.get(i), nodes, count+1, max);
 				
 				if(result > max) {
 					max = result;
 					
 				}
-				nodes = tmp;
-				
+				nodes = new Node[9];
+				for(int m=0;m<9;m++) {
+					nodes[m] = tmp[m].copy();
+				}
+
+
 			}
 		}
 		return max;
